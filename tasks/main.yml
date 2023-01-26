@@ -1,2 +1,32 @@
 ---
 # tasks file for cacti
+
+---
+- name: Install web server
+  hosts: all
+  gather_facts: true
+  tags: [httpd]
+
+tasks:
+  - name: Update the software package repository
+    apt:
+      name: '*'
+      update_cache: yes
+
+  - name: Install HTTP packages
+package:
+name: "{{ item }}"
+state: latest
+with_items:
+  - wget
+  - nano
+  - httpd
+  - httpd-devel
+
+  - name: Start the httpd server
+service:
+name: httpd
+state: started
+
+  - wait_for:
+port: 80
